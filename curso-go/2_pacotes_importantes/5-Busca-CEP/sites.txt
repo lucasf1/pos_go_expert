@@ -1,0 +1,5 @@
+Api para ceps:
+https://viacep.com.br/
+
+Site que converte json para struct go:
+https://transform.tools/json-to-go

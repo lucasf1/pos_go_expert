@@ -1,0 +1,5 @@
+1. docker-compose up -d
+2. docker-compose exec mysql bash
+2.1 mysql -uroot -p goexpert
+2.2 create table products (id varchar(255), name varchar(80), price decimal(10,2), primary key(id));
+2.3 select * from products;

@@ -1,0 +1,5 @@
+drop table products;
+show tables;
+desc products;
+
+drop table products;

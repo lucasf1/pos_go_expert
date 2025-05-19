@@ -1,0 +1,3 @@
+drop table serial_numbers;
+drop table products;
+drop table categories;

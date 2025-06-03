@@ -46,6 +46,8 @@ func BuscarCotacao(w http.ResponseWriter, r *http.Request) {
 	ctxServer, cancel := context.WithTimeout(ctxCliente, 200*time.Millisecond)
 	defer cancel()
 
+	// time.Sleep(time.Second * 10)
+
 	log.Println("Criando cliente HTTP para requisição ao serviço de cotação...")
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodGet, URL_API_COTACAO, nil)
@@ -102,6 +104,8 @@ func salvarCotacaoBD(ctxParent context.Context, cotacao *CoinQuery) error {
 
 	ctxBD, cancel := context.WithTimeout(ctxParent, 10*time.Millisecond)
 	defer cancel()
+
+	// time.Sleep(time.Second * 10)
 
 	db, err := sql.Open("sqlite3", "./cotacao.db")
 	if err != nil {

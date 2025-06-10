@@ -1,0 +1,6 @@
+go mod edit -replace example.com/pos_go_expert/7_packaging/3/math=../math
+
+# na pasta 4
+go work init ./math ./sistema
+
+go mod tidy -e 

@@ -32,7 +32,7 @@ func main() {
 	defer db.Close()
 
 	product := NewProduct("Notebook", 1899.90)
-	err = insertProduct(db, *product)
+	err = insertProduct(db, product)
 	if err != nil {
 		panic(err)
 	}
@@ -63,7 +63,7 @@ func main() {
 	}
 }
 
-func insertProduct(db *sql.DB, product Product) error {
+func insertProduct(db *sql.DB, product *Product) error {
 
 	stmt, err := db.Prepare("insert into products(id, name, price) values (?, ?, ?)")
 	if err != nil {

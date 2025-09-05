@@ -79,7 +79,7 @@ func main() {
 	// db.First(&p2, 1)
 	// fmt.Println(p2.Name)
 
-	// // deletando
+	// deletando
 	// db.Delete(&p2)
 
 }

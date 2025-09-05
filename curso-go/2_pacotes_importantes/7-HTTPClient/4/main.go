@@ -30,5 +30,4 @@ func main() {
 		panic(err)
 	}
 	println(string(body))
-
 }

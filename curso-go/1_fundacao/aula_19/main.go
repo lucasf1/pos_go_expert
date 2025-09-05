@@ -24,7 +24,7 @@ type MyNumber int
 
 // Constraint
 type Number interface {
-	~int | ~float64 // ~ para extender a relação (int ou tipos relacionados (MyNumber))
+	~int | ~float64 // ~ para extender a relação (int ou tipos relacionados (Ex.: MyNumber))
 }
 
 // func Soma[T int | float64](m map[string]T) T {

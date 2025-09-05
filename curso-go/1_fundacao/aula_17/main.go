@@ -16,5 +16,5 @@ func main() {
 }
 
 func showType(t interface{}) {
-	fmt.Printf("O tipode da variáve é %T e o valor é %v\n", t, t)
+	fmt.Printf("O tipo de da variável é %T e o valor é %v\n", t, t)
 }

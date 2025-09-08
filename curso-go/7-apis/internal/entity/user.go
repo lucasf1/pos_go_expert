@@ -25,7 +25,6 @@ func NewUser(name, email, password string) (*User, error) {
 		Email:    email,
 		Password: string(hash),
 	}, nil
-
 }
 
 func (u *User) ValidatePassword(password string) bool {

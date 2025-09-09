@@ -19,6 +19,7 @@ type conf struct {
 }
 
 func LoadConfig(path string) (*conf, error) {
+
 	var cfg *conf
 
 	viper.SetConfigName("app_config")

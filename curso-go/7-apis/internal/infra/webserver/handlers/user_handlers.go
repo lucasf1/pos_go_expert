@@ -11,6 +11,10 @@ import (
 	"github.com/lucasf1/goexpert/7-apis/internal/infra/database"
 )
 
+type Error struct {
+	Message string `json:"message"`
+}
+
 type UserHandler struct {
 	UserDB database.UserInterface
 }
@@ -21,6 +25,17 @@ func NewUserHandler(userDB database.UserInterface) *UserHandler {
 	}
 }
 
+// GetJWT godoc
+// @Summary      Get a user JWT
+// @Description  Get a user JWT
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        request   body     dto.GetJWTInput  true  "user credentials"
+// @Success      200  {object}  dto.GetJWTOutput
+// @Failure      404  {object}  Error
+// @Failure      500  {object}  Error
+// @Router       /users/generate_token [post]
 func (uh *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 
 	jwt := r.Context().Value("jwt").(*jwtauth.JWTAuth)
@@ -35,7 +50,9 @@ func (uh *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 
 	u, err := uh.UserDB.FindByEmail(user.Email)
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		w.WriteHeader(http.StatusNotFound)
+		error := Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(error)
 		return
 	}
 
@@ -49,11 +66,7 @@ func (uh *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 		"exp": time.Now().Add(time.Second * time.Duration(jWTExpiresIn)).Unix(),
 	})
 
-	accessToken := struct {
-		AccessToken string `json:"access_token"`
-	}{
-		AccessToken: tokenString,
-	}
+	accessToken := dto.GetJWTOutput{AccessToken: tokenString}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -61,18 +74,32 @@ func (uh *UserHandler) GetJWT(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// Create user godoc
+// @Summary      Create user
+// @Description  Create user
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        request     body      dto.CreateUserInput  true  "user request"
+// @Success      201
+// @Failure      500         {object}  Error
+// @Router       /users [post]
 func (uh *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	var user dto.CreateUserInput
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		error := Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(error)
 		return
 	}
 
 	u, err := entity.NewUser(user.Name, user.Email, user.Password)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		error := Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(error)
 		return
 	}
 

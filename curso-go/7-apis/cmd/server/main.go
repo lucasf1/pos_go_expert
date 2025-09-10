@@ -13,8 +13,28 @@ import (
 	"github.com/lucasf1/goexpert/7-apis/internal/infra/webserver/handlers"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+
+	_ "github.com/lucasf1/goexpert/7-apis/docs"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
+// @title           Go Expert API Example
+// @version         1.0
+// @description     Product API with auhtentication
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   Lucas Farias
+// @contact.url    http://www.fullcycle.com.br
+// @contact.email  atendimento@fullcycle.com.br
+
+// @license.name   Full Cycle License
+// @license.url    http://www.fullcycle.com.br
+
+// @host      localhost:8000
+// @BasePath  /
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 
 	configs, err := configs.LoadConfig(".")
@@ -54,6 +74,8 @@ func main() {
 
 	r.Post("/users", userHandler.Create)
 	r.Post("/users/generate_token", userHandler.GetJWT)
+
+	r.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8000/docs/doc.json")))
 
 	http.ListenAndServe(":8000", r)
 }

@@ -1,0 +1,2 @@
+-- rodar na pasta raiz do projeto. Onde tem o go.mod
+swag init -g cmd/server/main.go

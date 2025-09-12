@@ -82,7 +82,9 @@ func WorkerViaBrasil(cep string, ch chan<- EnderecoViaCep) {
 func main() {
 	ch1 := make(chan EnderecoBrasilApi)
 	ch2 := make(chan EnderecoViaCep)
-	cep := "58042040"
+	fmt.Print("Digite o cep desejado: ")
+	var cep string
+	fmt.Scan(&cep)
 
 	go WorkerViaBrasil(cep, ch2)
 	go WorkerBrasilApi(cep, ch1)

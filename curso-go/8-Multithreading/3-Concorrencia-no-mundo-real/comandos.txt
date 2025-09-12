@@ -1,0 +1,10 @@
+// ab (apach benchmark) - envia 10000 requisições, sendo 100 simultâneas ao endereço 
+ab -n 10000 -c 100 http://localhost:3000
+
+
+// programa para conferir o número de requisições
+curl http://localhost:3000
+
+
+// comando que ajuda a detectar race condition
+go run -race main.go

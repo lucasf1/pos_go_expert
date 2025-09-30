@@ -1,0 +1,24 @@
+migrate create -ext=sql -dir=sql/migrations -seq init
+
+sudo service docker start
+docker-compose up -d
+
+migrate -path=sql/migrations -database "mysql://root:root@tcp(localhost:3306)/courses" -verbose up
+
+docker-compose exec mysql bash
+mysql -uroot -p courses
+show tables;
+desc categories;
+desc courses;
+
+
+migrate -path=sql/migrations -database "mysql://root:root@tcp(localhost:3306)/courses" -verbose down
+
+após criar o Makefile:
+- make migrate
+- make migratedown
+
+
+go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+sqlc generate
+

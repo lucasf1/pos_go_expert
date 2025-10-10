@@ -1,8 +1,18 @@
 https://gqlgen.com/
 
+- Add github.com/99designs/gqlgen to your project’s tools.go
+$ printf '//go:build tools\npackage tools\nimport (_ "github.com/99designs/gqlgen"\n _ "github.com/99designs/gqlgen/graphql/introspection")' | gofmt > tools.go
+$ go mod tidy
+
+- Initialise gqlgen config and generate models
+$ go run github.com/99designs/gqlgen init
+$ go mod tidy
+
+- Playground do GraphQL:
 http://localhost:8080/
 
-go run github.com/99designs/gqlgen init
+- Editar o arquivo schema.graphqls para gerar o model desejado
 
-go run github.com/99designs/gqlgen generate
+- Gera o model de acordo com o schema.graphqls
+$ go run github.com/99designs/gqlgen generate
 

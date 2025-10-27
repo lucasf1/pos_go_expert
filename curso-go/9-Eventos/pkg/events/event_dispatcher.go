@@ -36,6 +36,7 @@ func (ed *EventDispatcher) Clear() {
 }
 
 func (ed *EventDispatcher) Has(eventName string, handler EventHandlerInterface) bool {
+
 	if _, ok := ed.handlers[eventName]; ok {
 		for _, h := range ed.handlers[eventName] {
 			if h == handler {
@@ -47,6 +48,7 @@ func (ed *EventDispatcher) Has(eventName string, handler EventHandlerInterface) 
 }
 
 func (ed *EventDispatcher) Dispatch(event EventInterface) error {
+
 	if handlers, ok := ed.handlers[event.GetName()]; ok {
 		wg := &sync.WaitGroup{}
 		for _, handler := range handlers {
@@ -60,6 +62,7 @@ func (ed *EventDispatcher) Dispatch(event EventInterface) error {
 }
 
 func (ed *EventDispatcher) Remove(eventName string, handler EventHandlerInterface) error {
+	
 	if _, ok := ed.handlers[eventName]; ok {
 		for i, h := range ed.handlers[eventName] {
 			if h == handler {

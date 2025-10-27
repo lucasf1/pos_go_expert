@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	
 	ch, err := rabbitmq.OpenChannel()
 	if err != nil {
 		panic(err)

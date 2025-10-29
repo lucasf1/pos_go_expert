@@ -3,12 +3,17 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"net"
 
 	"github.com/lucasf1/Desafio3/configs"
 	"github.com/lucasf1/Desafio3/internal/event/handler"
+	"github.com/lucasf1/Desafio3/internal/infra/grpc/pb"
+	"github.com/lucasf1/Desafio3/internal/infra/grpc/service"
 	"github.com/lucasf1/Desafio3/internal/infra/web/webserver"
 	"github.com/lucasf1/Desafio3/pkg/events"
 	"github.com/streadway/amqp"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
 	// driver sqlite
 	_ "github.com/mattn/go-sqlite3"
@@ -34,10 +39,6 @@ func main() {
 		RabbitMQChannel: rabbitMQChannel,
 	})
 
-	// fmt.Println(configs.WebServerPort)
-
-	// createOrderUseCase := NewCreateOrderUseCase(db, eventDispatcher)
-
 	webserver := webserver.NewWebServer(configs.WebServerPort)
 	webOrderHandler := NewWebOrderHandler(db, eventDispatcher)
 
@@ -45,8 +46,21 @@ func main() {
 	webserver.AddHandler("/list_orders", webOrderHandler.List)
 
 	fmt.Println("Starting web server on port", configs.WebServerPort)
-	webserver.Start()
+	go webserver.Start()
 
+	grpcServer := grpc.NewServer()
+	createOrderUseCase := NewCreateOrderUseCase(db, eventDispatcher)
+	listOrdersUseCase := NewListOrdersUseCase(db)
+	orderService := service.NewOrderService(*createOrderUseCase, *listOrdersUseCase)
+	pb.RegisterOrderServiceServer(grpcServer, orderService)
+	reflection.Register(grpcServer)
+
+	fmt.Println("Starting gRPC server on port", configs.GRPCServerPort)
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", configs.GRPCServerPort))
+	if err != nil {
+		panic(err)
+	}
+	grpcServer.Serve(lis)
 }
 
 func getRabbitMQChannel() *amqp.Channel {

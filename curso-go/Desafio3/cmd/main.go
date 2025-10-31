@@ -4,9 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"net"
+	"net/http"
 
+	graphql_handler "github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/lucasf1/Desafio3/configs"
 	"github.com/lucasf1/Desafio3/internal/event/handler"
+	"github.com/lucasf1/Desafio3/internal/infra/graph"
 	"github.com/lucasf1/Desafio3/internal/infra/grpc/pb"
 	"github.com/lucasf1/Desafio3/internal/infra/grpc/service"
 	"github.com/lucasf1/Desafio3/internal/infra/web/webserver"
@@ -48,10 +52,11 @@ func main() {
 	fmt.Println("Starting web server on port", configs.WebServerPort)
 	go webserver.Start()
 
-	grpcServer := grpc.NewServer()
 	createOrderUseCase := NewCreateOrderUseCase(db, eventDispatcher)
 	listOrdersUseCase := NewListOrdersUseCase(db)
 	orderService := service.NewOrderService(*createOrderUseCase, *listOrdersUseCase)
+
+	grpcServer := grpc.NewServer()
 	pb.RegisterOrderServiceServer(grpcServer, orderService)
 	reflection.Register(grpcServer)
 
@@ -60,7 +65,17 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	grpcServer.Serve(lis)
+	go grpcServer.Serve(lis)
+
+	srv := graphql_handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		CreateOrderUseCase: *createOrderUseCase,
+		ListOrdersUseCase:  *listOrdersUseCase,
+	}}))
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
+
+	fmt.Println("Starting GraphQL server on port", configs.GraphQLServerPort)
+	http.ListenAndServe(":"+configs.GraphQLServerPort, nil)
 }
 
 func getRabbitMQChannel() *amqp.Channel {

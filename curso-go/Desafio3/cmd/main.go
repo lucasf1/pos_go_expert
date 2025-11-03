@@ -20,7 +20,10 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	// driver sqlite
-	_ "github.com/mattn/go-sqlite3"
+	// _ "github.com/mattn/go-sqlite3"
+
+	// mysql
+	_ "github.com/go-sql-driver/mysql"	
 )
 
 func main() {
@@ -30,7 +33,13 @@ func main() {
 		panic(err)
 	}
 
-	db, err := sql.Open("sqlite3", "./db_orders.sqlite3")
+	// db, err := sql.Open("sqlite3", "./db_orders.sqlite3")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer db.Close()
+
+	db, err := sql.Open(configs.DBDriver, fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", configs.DBUser, configs.DBPassword, configs.DBHost, configs.DBPort, configs.DBName))
 	if err != nil {
 		panic(err)
 	}
@@ -46,8 +55,8 @@ func main() {
 	webserver := webserver.NewWebServer(configs.WebServerPort)
 	webOrderHandler := NewWebOrderHandler(db, eventDispatcher)
 
-	webserver.AddHandler("/orders", webOrderHandler.Create)
-	webserver.AddHandler("/list_orders", webOrderHandler.List)
+	webserver.AddRoute("POST", "/orders", webOrderHandler.Create)
+	webserver.AddRoute("GET", "/orders", webOrderHandler.List)
 
 	fmt.Println("Starting web server on port", configs.WebServerPort)
 	go webserver.Start()

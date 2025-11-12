@@ -1,0 +1,3 @@
+.docker/
+GEMINI.md
+cmd/db_orders.sqlite3

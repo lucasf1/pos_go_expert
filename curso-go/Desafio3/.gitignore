@@ -1,0 +1,10 @@
+# Environment variables
+.env
+
+# Docker data
+.docker/
+
+# Local database file
+cmd/db_orders.sqlite3
+
+cmd/server

@@ -1,13 +1,13 @@
-POST http://localhost:8000/orders HTTP/1.1
+POST http://localhost:8000/order HTTP/1.1
 Host: localhost:8000
 Content-Type: application/json
 
 {
-    "id":"fffff",
-    "price": 110.5,
-    "tax": 5.5
+    "id":"hhhhh",
+    "price": 121.5,
+    "tax": 7.7
 }
 
 ###
-GET http://localhost:8000/list_orders 
+GET http://127.0.0.1:8000/order 
 

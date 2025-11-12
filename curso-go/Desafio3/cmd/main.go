@@ -23,15 +23,12 @@ import (
 	// _ "github.com/mattn/go-sqlite3"
 
 	// mysql
-	_ "github.com/go-sql-driver/mysql"	
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
 
-	configs, err := configs.LoadConfig(".")
-	if err != nil {
-		panic(err)
-	}
+	configs := configs.LoadConfig(".")
 
 	// db, err := sql.Open("sqlite3", "./db_orders.sqlite3")
 	// if err != nil {
@@ -45,7 +42,7 @@ func main() {
 	}
 	defer db.Close()
 
-	rabbitMQChannel := getRabbitMQChannel()
+	rabbitMQChannel := getRabbitMQChannel(configs.RabbitMQURL)
 
 	eventDispatcher := events.NewEventDispatcher()
 	eventDispatcher.Register("OrderCreated", &handler.OrderCreatedHandler{
@@ -55,8 +52,8 @@ func main() {
 	webserver := webserver.NewWebServer(configs.WebServerPort)
 	webOrderHandler := NewWebOrderHandler(db, eventDispatcher)
 
-	webserver.AddRoute("POST", "/orders", webOrderHandler.Create)
-	webserver.AddRoute("GET", "/orders", webOrderHandler.List)
+	webserver.AddRoute("POST", "/order", webOrderHandler.Create)
+	webserver.AddRoute("GET", "/order", webOrderHandler.List)
 
 	fmt.Println("Starting web server on port", configs.WebServerPort)
 	go webserver.Start()
@@ -87,9 +84,9 @@ func main() {
 	http.ListenAndServe(":"+configs.GraphQLServerPort, nil)
 }
 
-func getRabbitMQChannel() *amqp.Channel {
+func getRabbitMQChannel(rabbitMQURL string) *amqp.Channel {
 
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5674/")
+	conn, err := amqp.Dial(rabbitMQURL)
 	if err != nil {
 		panic(err)
 	}

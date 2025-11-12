@@ -1,117 +1,127 @@
 # Desafio 3 - Go Expert
 
-This project is a Go-based application that exposes a set of services for managing orders. It provides three different APIs for interacting with the services: a RESTful API, a gRPC API, and a GraphQL API. The project follows a clean architecture pattern, with a clear separation of concerns between the different layers of the application.
+Este projeto é uma aplicação Go que expõe um conjunto de serviços para gerenciar pedidos. Ele fornece três APIs diferentes para interagir com os serviços: uma API RESTful, uma API gRPC e uma API GraphQL. O projeto segue um padrão de arquitetura limpa, com uma clara separação de responsabilidades entre as diferentes camadas da aplicação.
 
-## Main Technologies
+## Principais Tecnologias
 
-*   **Go:** The primary programming language used in the project.
-*   **MySQL:** The database used to store the orders.
-*   **RabbitMQ:** The message broker used to handle asynchronous events.
-*   **GraphQL:** A query language for APIs.
-*   **gRPC:** A high-performance, open-source universal RPC framework.
-*   **Docker:** Used to run the application and its dependencies in a containerized environment.
+*   **Go:** A linguagem de programação utilizada no projeto.
+*   **MySQL:** O banco de dados utilizado para armazenar os pedidos.
+*   **RabbitMQ:** O message broker utilizado para lidar com eventos assíncronos.
+*   **GraphQL:** Uma linguagem de consulta para APIs.
+*   **gRPC:** Um framework RPC universal de alto desempenho e código aberto.
+*   **Docker:** Utilizado para executar a aplicação e suas dependências em um ambiente conteinerizado.
 
-## Architecture
+## Arquitetura
 
-The project is divided into the following main components:
+O projeto está dividido nos seguintes componentes principais:
 
-*   **`cmd`:** Contains the main entry point of the application.
-*   **`configs`:** Contains the configuration files for the application.
-*   **`internal`:** Contains the core business logic of the application, including entities, use cases, and repositories.
-*   **`pkg`:** Contains reusable packages that can be shared across different projects.
+*   **`cmd`:** Contém o ponto de entrada principal da aplicação.
+*   **`configs`:** Contém os arquivos de configuração para a aplicação.
+*   **`internal`:** Contém a lógica de negócios principal da aplicação, incluindo entidades, casos de uso e repositórios.
+*   **`pkg`:** Contém pacotes reutilizáveis que podem ser compartilhados entre diferentes projetos.
 
-## Building and Running
+## Construindo e Executando
 
-To build and run the project, you will need to have Docker and Docker Compose installed on your machine. Once you have them installed, you can follow these steps:
+Para construir e executar o projeto, você precisará ter o Docker e o Docker Compose instalados em sua máquina. Depois de instalados, você pode seguir estas etapas:
 
-1.  **Start the services:**
+1.  **Iniciar os serviços:**
     ```bash
     docker-compose up -d
     ```
-2.  **Run the application:**
+2.  **Executar a aplicação:**
     ```bash
-    go run cmd/main.go
+    DB_DRIVER=mysql \
+    DB_HOST=127.0.0.1 \
+    DB_PORT=3306 \
+    DB_USER=root \
+    DB_PASSWORD=root \
+    DB_NAME=orders \
+    WEB_SERVER_PORT=8000 \
+    GRPC_SERVER_PORT=50051 \
+    GRAPHQL_SERVER_PORT=8081 \
+    RABBITMQ_URL=amqp://guest:guest@localhost:5672/ \
+    go run ./cmd/main.go ./cmd/wire_gen.go
     ```
 
-The application will be available at the following endpoints:
+A aplicação estará disponível nos seguintes endpoints:
 
-*   **RESTful API:** `http://localhost:8080`
-*   **gRPC API:** `localhost:50051`
-*   **GraphQL API:** `http://localhost:8081`
+*   **API RESTful:** `http://localhost:8000`
+*   **API gRPC:** `localhost:50051`
+*   **API GraphQL:** `http://localhost:8081`
 
-## Interacting with the APIs
+## Interagindo com as APIs
 
-### RESTful API
+### API RESTful
 
-You can use the following `curl` commands to interact with the RESTful API:
+Você pode usar os seguintes comandos `curl` para interagir com a API RESTful:
 
-**Create an order:**
+**Criar um pedido:**
 
 ```bash
 curl -X POST -H "Content-Type: application/json" -d '{
-    "id": "123",
+    "id": "aaaaa",
     "price": 10.0,
     "tax": 1.0
-}' http://localhost:8080/orders
+}' http://localhost:8000/order
 ```
 
-**List all orders:**
+**Listar todos os pedidos:**
 
 ```bash
-curl http://localhost:8080/orders
+curl http://localhost:8000/order
 ```
 
-You can also use the `api/create_order.http` file to interact with the API using a REST client like the VS Code REST Client extension.
+Você também pode usar o arquivo `api/create_order.http` para interagir com a API usando um cliente REST como a extensão VS Code REST Client.
 
-### GraphQL API
+### API GraphQL
 
-To interact with the GraphQL API, you can use the GraphQL Playground, which is available at `http://localhost:8081`.
+Para interagir com a API GraphQL, você pode usar o GraphQL Playground, que está disponível em `http://localhost:8081`.
 
-**Create an order:**
+**Criar um pedido:**
 
 ```graphql
-mutation {
+mutation createOrder {
   createOrder(input: {
-    id: "123",
-    price: 10.0,
-    tax: 1.0
+    id: "ccccc",
+    Price: 10.0,
+    Tax: 1.0
   }) {
     id
-    price
-    tax
-    finalPrice
+    Price
+    Tax
+    FinalPrice
   }
 }
 ```
 
-**List all orders:**
+**Listar todos os pedidos:**
 
 ```graphql
-query {
-  listOrders {
+query queryOrders{
+  orders {
     id
-    price
-    tax
-    finalPrice
+    Price
+    Tax
+    FinalPrice
   }
 }
 ```
 
-### gRPC API
+### API gRPC
 
-To interact with the gRPC API, you can use a gRPC client like `grpcurl`.
+Para interagir com a API gRPC, você pode usar um cliente gRPC como `grpcurl`.
 
-**Create an order:**
+**Criar um pedido:**
 
 ```bash
 grpcurl -d '{
-    "id": "123",
+    "id": "eeeee",
     "price": 10.0,
     "tax": 1.0
 }' -plaintext localhost:50051 pb.OrderService/CreateOrder
 ```
 
-**List all orders:**
+**Listar todos os pedidos:**
 
 ```bash
 grpcurl -plaintext localhost:50051 pb.OrderService/ListOrders
